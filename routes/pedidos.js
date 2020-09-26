@@ -10,18 +10,23 @@ router.get('/', (req, res, next) => {
 
 // INSERE UM PEDIDO
 router.post('/', (req, res, next) => {
+    const pedido = {
+        id_produto: req.body.id_produto,
+        quantidade: req.body.quantidade
+    };
     res.status(201).send({
-        mensagem: 'O pedido foi criado.'
+        mensagem: 'O pedido foi criado.',
+        pedidoCriado: pedido
     });
 });
 
 // RETORNO UM PEDIDO ESPECÍFICO
 router.get('/:id_pedido', (req, res, next) => {
     const id = req.params.id_pedido    
-        res.status(200).send({
-            mensagem: 'Detalhes do pedido',
-            id_pedido: id
-        });   
+    res.status(200).send({
+        mensagem: 'Detalhes do pedido',
+        id_pedido: id
+    });   
 });
 
 // ATUALIZA UM PEDIDO ESPECÍFICO
