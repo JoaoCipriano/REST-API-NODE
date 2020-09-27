@@ -1,0 +1,10 @@
+{
+    "comment": "Rename this file from sample_nodemon.json to nodemon.json and delete this line",
+    "env" : {
+        "MYSQL_USER"     : "user",
+        "MYSQL_PASSWORD" : "password",
+        "MYSQL_DATABASE" : "database",
+        "MYSQL_HOST"     : "host",
+        "MYSQL_PORT"     : 3306
+    }
+}
