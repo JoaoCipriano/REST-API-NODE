@@ -42,17 +42,17 @@ router.post('/', (req, res, next) => {
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                   mensagem: 'Produto inserido com sucesso',
-                   produtoCriado: {
-                       id_produto: result.id_produto,
-                       nome: req.body.nome,
-                       preco: req.body.preco,
-                       request: {
+                    mensagem: 'Produto inserido com sucesso',
+                    produtoCriado: {
+                        id_produto: result.id_produto,
+                        nome: req.body.nome,
+                        preco: req.body.preco,
+                        request: {
                             tipo: 'GET',
                             descricao: 'Retorna todos os produtos',
                             url: 'http://localhost:3000/produtos'
                         }
-                   }
+                    }
                 }
                 return res.status(201).send(response);
             }
@@ -69,7 +69,6 @@ router.get('/:id_produto', (req, res, next) => {
             [req.params.id_produto],
             (error, result, fields) => {
                 if (error) { return res.status(500).send({ error: error }) }
-
                 if (result.length == 0) {
                     return res.status(404).send({
                         mensagem: 'Não foi encontrado um produto com o ID ' + req.params.id_produto
@@ -139,16 +138,16 @@ router.delete('/', (req, res, next) => {
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                   mensagem: 'Produto removido com sucesso',
-                   request: {
-                       tipo: 'POST',
-                       descricao: 'Insere um produto',
-                       url: 'http://localhost:3000/produtos',
-                       body: {
+                    mensagem: 'Produto removido com sucesso',
+                    request: {
+                        tipo: 'POST',
+                        descricao: 'Insere um produto',
+                        url: 'http://localhost:3000/produtos',
+                        body: {
                             nome: 'String',
                             preco: 'Number'
-                       }
-                   } 
+                        }
+                    } 
                 }
                 return res.status(202).send(response);
             }
