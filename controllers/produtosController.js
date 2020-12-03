@@ -4,22 +4,17 @@ exports.getProdutos = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-          'SELECT * FROM produtos;',
+          'SELECT * FROM products;',
           (error, result, fields) => {
             if (error) { return res.status(500).send({ error: error }) }
             const response = {
                 quantidade: result.length,
                 produtos: result.map(prod => {
                     return {
-                        id_produto: prod.id_produto,
-                        nome: prod.nome,
-                        preco: prod.preco,
-                        imagem_produto: prod.imagem_produto,
-                        request: {
-                            tipo: 'GET',
-                            descricao: 'Retorna os detalhes de um produto específico',
-                            url: 'http://localhost:3000/produtos/' + prod.id_produto
-                        }
+                        id_produto: prod.id,
+                        nome: prod.name,
+                        preco: prod.value,
+                        imagem_produto: prod.imagem_produto
                     }
                 })
             }
@@ -34,11 +29,13 @@ exports.postProdutos = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            'INSERT INTO produtos (nome, preco, imagem_produto) VALUES (?, ?, ?);',
+            'INSERT INTO products (name, value, weight, expiration_date, manufacturing_date) VALUES (?, ?, ?, ?, ?);',
             [
-                req.body.nome,
-                req.body.preco,
-                req.file.path
+                req.body.name,
+                req.body.value,
+                req.body.weight,
+                new Date(req.body.expiration_date).toISOString().slice(0, 19).replace('T', ' '),
+                new Date(req.body.manufacturing_date).toISOString().slice(0, 19).replace('T', ' ')
             ],
             (error, result, field) => {
                 conn.release();
@@ -49,7 +46,6 @@ exports.postProdutos = (req, res, next) => {
                         id_produto: result.id_produto,
                         nome: req.body.nome,
                         preco: req.body.preco,
-                        imagem_produto: req.file.path,
                         request: {
                             tipo: 'GET',
                             descricao: 'Retorna todos os produtos',
@@ -67,7 +63,7 @@ exports.getProdutoId = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            'SELECT * FROM produtos WHERE id_produto = ?',
+            'SELECT * FROM products WHERE id = ?',
             [req.params.id_produto],
             (error, result, fields) => {
                 if (error) { return res.status(500).send({ error: error }) }
@@ -78,15 +74,9 @@ exports.getProdutoId = (req, res, next) => {
                 }
                 const response = {
                     produto: {
-                        id_produto: result[0].id_produto,
-                        nome: result[0].nome,
-                        preco: result[0].preco,
-                        imagem_produto: result[0].imagem_produto,
-                        request: {
-                            tipo: 'GET',
-                            descricao: 'Retorna todos os produtos',
-                            url: 'http://localhost:3000/produtos'
-                        }
+                        id_produto: result[0].id,
+                        nome: result[0].name,
+                        preco: result[0].value
                     }
                 }
                 return res.status(200).send(response);
@@ -99,14 +89,12 @@ exports.patchProduto = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `UPDATE produtos
-                SET nome       = ?, 
-                    preco      = ?
-              WHERE id_produto = ?`,
+            `UPDATE products
+                SET name       = ?
+              WHERE id         = ?`,
             [
-                req.body.nome, 
-                req.body.preco, 
-                req.body.id_produto
+                req.body.name, 
+                req.body.id
             ],
             (error, result, field) => {
                 conn.release();
@@ -114,14 +102,9 @@ exports.patchProduto = (req, res, next) => {
                 const response = {
                     mensagem: 'Produto atualizado com sucesso',
                     produtoAtualizado: {
-                        id_produto: req.body.id_produto,
-                        nome: req.body.nome,
-                        preco: req.body.preco,
-                        request: {
-                            tipo: 'GET',
-                            descricao: 'Retorna os detalhes de um produto específico',
-                            url: 'http://localhost:3000/produtos/' + req.body.id_produto
-                        }
+                        id_produto: req.body.id,
+                        nome: req.body.name,
+                        preco: req.body.value
                     }
                 }
                 return res.status(202).send(response);
@@ -134,21 +117,12 @@ exports.deleteProduto = (req, res, next) => {
     mysql.getConnection((error, conn) => {
         if (error) { return res.status(500).send({ error: error }) }
         conn.query(
-            `DELETE FROM produtos WHERE id_produto = ?`, [req.body.id_produto],
+            `DELETE FROM products WHERE id = ?`, [req.body.id],
             (error, result, field) => {
                 conn.release();
                 if (error) { return res.status(500).send({ error: error }) }
                 const response = {
-                    mensagem: 'Produto removido com sucesso',
-                    request: {
-                        tipo: 'POST',
-                        descricao: 'Insere um produto',
-                        url: 'http://localhost:3000/produtos',
-                        body: {
-                            nome: 'String',
-                            preco: 'Number'
-                        }
-                    } 
+                    mensagem: 'Produto removido com sucesso'
                 }
                 return res.status(202).send(response);
             }

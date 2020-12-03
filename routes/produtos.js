@@ -38,7 +38,7 @@ const upload = multer({
     fileFilter: fileFilter
  });
 
-router.get('/', ProdutoController.getProdutos);
+router.get('/', login.obrigatorio, ProdutoController.getProdutos);
 router.post(
     '/', 
     login.obrigatorio, 
